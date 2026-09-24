@@ -240,9 +240,27 @@ function renderOffers(){
  document.querySelector('#programFilter').onchange=e=>{state.filters.program=e.target.value;renderOfferRows(filteredOffers());};
  document.querySelector('#cabinFilter').onchange=e=>{state.filters.cabin=e.target.value;renderOfferRows(filteredOffers());};
 }
+function openRouteOffers(origin,destination){
+ state.filters.origin=String(origin||'').toUpperCase();
+ state.filters.destination=String(destination||'').toUpperCase();
+ state.filters.program='';
+ state.filters.cabin='';
+ navigate('offers');
+}
+
 function renderRoutes(){
  const routes=routeSummary();
- document.querySelector('#content').innerHTML=`<div class="route-cards">${routes.map(r=>`<div class="route-card"><div class="route-code">${esc(r.origin)} <span>→</span> ${esc(r.destination)}</div><div class="route-stats"><div><span>Ofertas</span><b>${r.count}</b></div><div><span>Menor emissão</span><b>${fmt(r.min)}</b></div></div><button class="ghost full" onclick="state.filters.origin='${r.origin}';state.filters.destination='${r.destination}';navigate('offers')">Ver ofertas</button></div>`).join('')}</div>`;
+ document.querySelector('#content').innerHTML=`<div class="route-cards">${routes.map((r,i)=>`<div class="route-card">
+   <div class="route-code">${esc(r.origin)} <span>→</span> ${esc(r.destination)}</div>
+   <div class="route-stats"><div><span>Ofertas</span><b>${r.count}</b></div><div><span>Menor emissão</span><b>${fmt(r.min)}</b></div></div>
+   <button type="button" class="ghost full route-offers-btn" data-route-index="${i}">Ver ofertas</button>
+ </div>`).join('')}</div>`;
+ document.querySelectorAll('.route-offers-btn').forEach((button,i)=>{
+   button.addEventListener('click',()=>{
+     const r=routes[i];
+     if(r) openRouteOffers(r.origin,r.destination);
+   });
+ });
 }
 
 window.navigate = view => {
