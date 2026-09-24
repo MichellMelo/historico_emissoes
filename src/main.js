@@ -86,14 +86,80 @@ function filteredOffers(){
    (!f.cabin||x.cabin===f.cabin)
  );
 }
+
+function getBestOffer(rows){
+ const valid=rows.filter(x=>Number.isFinite(Number(x.miles))&&Number(x.miles)>0);
+ if(!valid.length)return null;
+ return [...valid].sort((a,b)=>{
+   const miles=Number(a.miles)-Number(b.miles);
+   if(miles!==0)return miles;
+   return new Date(b.recorded_at||0)-new Date(a.recorded_at||0);
+ })[0];
+}
+
+function renderBestOffer(rows){
+ const box=document.querySelector('#bestOffer');
+ if(!box)return;
+ const routeActive=state.filters.origin&&state.filters.destination;
+ const best=getBestOffer(rows);
+ if(!routeActive||!best){
+   box.hidden=true;
+   box.innerHTML='';
+   return;
+ }
+ box.hidden=false;
+ box.innerHTML=
+   '<div class="best-offer-badge">★ MELHOR OPÇÃO ENCONTRADA</div>'+
+   '<div class="best-offer-main">'+
+     '<div class="best-offer-route"><span>'+esc(best.origin)+'</span><b>→</b><span>'+esc(best.destination)+'</span></div>'+
+     '<div class="best-offer-program"><strong>'+esc(best.program)+'</strong><span>'+esc(best.cabin||'Classe não informada')+'</span></div>'+
+     '<div class="best-offer-miles"><strong>'+fmt(best.miles)+'</strong><span>milhas</span></div>'+
+   '</div>'+
+   '<div class="best-offer-details">'+
+     '<span><b>Meses:</b> '+esc(best.available_months||'Não informado')+'</span>'+
+     '<span><b>Ida:</b> '+esc(best.outbound_dates||'Não informado')+'</span>'+
+     '<span><b>Volta:</b> '+esc(best.return_dates||'Não informado')+'</span>'+
+   '</div>'+
+   '<div class="best-offer-note">Critério: menor quantidade de milhas entre as ofertas encontradas para esta rota.</div>';
+}
+
 function renderOfferRows(rows){
  const body=document.querySelector('#offersBody');
+ const mobile=document.querySelector('#offersMobile');
  const count=document.querySelector('#resultCount');
  if(!body||!count)return;
  count.textContent=rows.length+' registros';
- body.innerHTML=rows.map(x=>`<tr><td><strong>${esc(x.origin)} → ${esc(x.destination)}</strong></td><td>${esc(x.program)}</td><td>${esc(x.cabin)}</td><td class="miles">${fmt(x.miles)}</td><td>${esc(x.available_months)}</td><td>${esc(x.outbound_dates)}</td><td>${esc(x.return_dates)}</td><td class="actions"><button class="icon" onclick="editOffer('${x.id}')" aria-label="Editar oferta">✎</button><button class="icon danger" onclick="deleteOffer('${x.id}')" aria-label="Excluir oferta">⌫</button></td></tr>`).join('');
-}
+ renderBestOffer(rows);
 
+ if(!rows.length){
+   body.innerHTML='<tr><td colspan="8" class="empty-cell">Nenhuma oferta encontrada para os filtros informados.</td></tr>';
+   if(mobile)mobile.innerHTML='<div class="empty-offers">Nenhuma oferta encontrada para os filtros informados.</div>';
+   return;
+ }
+
+ body.innerHTML=rows.map(x=>'<tr><td><strong>'+esc(x.origin)+' → '+esc(x.destination)+'</strong></td><td>'+esc(x.program)+'</td><td>'+esc(x.cabin)+'</td><td class="miles">'+fmt(x.miles)+'</td><td>'+esc(x.available_months)+'</td><td>'+esc(x.outbound_dates)+'</td><td>'+esc(x.return_dates)+'</td><td class="actions"><button class="icon" onclick="editOffer(\''+x.id+'\')" aria-label="Editar oferta">✎</button><button class="icon danger" onclick="deleteOffer(\''+x.id+'\')" aria-label="Excluir oferta">⌫</button></td></tr>').join('');
+
+ if(mobile){
+   mobile.innerHTML=rows.map(x=>
+     '<article class="offer-card">'+
+       '<div class="offer-card-top">'+
+         '<div class="offer-card-route"><strong>'+esc(x.origin)+'</strong><span>→</span><strong>'+esc(x.destination)+'</strong></div>'+
+         '<div class="offer-card-miles"><strong>'+fmt(x.miles)+'</strong><small>milhas</small></div>'+
+       '</div>'+
+       '<div class="offer-card-program"><strong>'+esc(x.program)+'</strong><span>'+esc(x.cabin)+'</span></div>'+
+       '<div class="offer-card-details">'+
+         '<div><small>MESES</small><span>'+esc(x.available_months||'—')+'</span></div>'+
+         '<div><small>IDA</small><span>'+esc(x.outbound_dates||'—')+'</span></div>'+
+         '<div><small>VOLTA</small><span>'+esc(x.return_dates||'—')+'</span></div>'+
+       '</div>'+
+       '<div class="offer-card-actions">'+
+         '<button class="icon" onclick="editOffer(\''+x.id+'\')">✎ Editar</button>'+
+         '<button class="icon danger" onclick="deleteOffer(\''+x.id+'\')">⌫ Excluir</button>'+
+       '</div>'+
+     '</article>'
+   ).join('');
+ }
+}
 function renderOffers(){
  const f=state.filters;
  document.querySelector('#content').innerHTML=`
@@ -119,7 +185,11 @@ function renderOffers(){
      <span id="resultCount" class="result-count">${filteredOffers().length} registros</span>
    </div>
  </div>
- <div class="panel"><div class="table-wrap"><table class="offers"><thead><tr><th>Rota</th><th>Programa</th><th>Classe</th><th>Milhas</th><th>Meses</th><th>Datas ida</th><th>Datas volta</th><th></th></tr></thead><tbody id="offersBody"></tbody></table></div></div>`;
+ <div id="bestOffer" class="best-offer" hidden></div>
+ <div class="panel offers-panel">
+   <div class="table-wrap desktop-offers"><table class="offers"><thead><tr><th>Rota</th><th>Programa</th><th>Classe</th><th>Milhas</th><th>Meses</th><th>Datas ida</th><th>Datas volta</th><th></th></tr></thead><tbody id="offersBody"></tbody></table></div>
+   <div id="offersMobile" class="offers-mobile"></div>
+ </div>`;
  renderOfferRows(filteredOffers());
  const originInput=document.querySelector('#originSearch');
  const destinationInput=document.querySelector('#destinationSearch');
@@ -147,7 +217,7 @@ function renderOffers(){
 }
 function renderRoutes(){
  const routes=routeSummary();
- document.querySelector('#content').innerHTML=`<div class="route-cards">${routes.map(r=>`<div class="route-card"><div class="route-code">${esc(r.origin)} <span>→</span> ${esc(r.destination)}</div><div class="route-stats"><div><span>Ofertas</span><b>${r.count}</b></div><div><span>Menor emissão</span><b>${fmt(r.min)}</b></div></div><button class="ghost full" onclick="state.filters.search='${r.origin} ${r.destination}';navigate('offers')">Ver ofertas</button></div>`).join('')}</div>`;
+ document.querySelector('#content').innerHTML=`<div class="route-cards">${routes.map(r=>`<div class="route-card"><div class="route-code">${esc(r.origin)} <span>→</span> ${esc(r.destination)}</div><div class="route-stats"><div><span>Ofertas</span><b>${r.count}</b></div><div><span>Menor emissão</span><b>${fmt(r.min)}</b></div></div><button class="ghost full" onclick="state.filters.origin='${r.origin}';state.filters.destination='${r.destination}';navigate('offers')">Ver ofertas</button></div>`).join('')}</div>`;
 }
 
 window.navigate = view => {
