@@ -45,7 +45,7 @@ async function loadOffers(){
 }
 
 function renderDashboard(){
-const dashboardRecentStyle = \`
+const dashboardRecentStyle = `
 <style id="dashboard-recent-inline">
 .recent-offers-mobile{display:none}
 @media(max-width:720px){
@@ -68,7 +68,7 @@ const dashboardRecentStyle = \`
  .recent-program .program-badge{display:inline-flex!important;align-items:center!important;gap:8px!important;font-size:11px!important}
  .recent-program .program-logo-frame{display:grid!important;place-items:center!important;width:28px!important;height:28px!important;flex:0 0 28px!important}
 }
-</style>\`;
+</style>`;
   const o=state.offers, miles=o.map(x=>x.miles).filter(Boolean);
   const min=miles.length?Math.min(...miles):0;
   const routes=new Set(o.map(x=>x.origin+'-'+x.destination)).size;
