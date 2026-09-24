@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<defs>
+  <linearGradient id="silver" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f7f7f7"/><stop offset=".55" stop-color="#c8c8c8"/><stop offset="1" stop-color="#fff"/></linearGradient>
+  <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff1a6"/><stop offset=".35" stop-color="#f5c542"/><stop offset="1" stop-color="#a86b00"/></linearGradient>
+  <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="5" stdDeviation="7" flood-color="#000" flood-opacity=".45"/></filter>
+</defs>
+<g filter="url(#shadow)">
+  <path fill="url(#silver)" d="M70 205c12-74 54-116 126-127h216c-18 59-61 94-129 94H160c-36 2-65 13-90 33Z"/>
+  <path fill="url(#gold)" d="M69 408V245c0-58 42-94 105-94h142c-18 42-48 66-96 66h-73c-27 0-45 11-54 34v109c33-30 65-44 105-45 72-1 117-26 153-71l26-33 14 12c-48 92-111 147-190 164-50 11-93 14-132 21Z"/>
+  <path fill="#f4f6f8" d="M330 258l91-48-31 58 44 7-72 15 7 38-31-31-24 9 12-31-35-19 39 2Z"/>
+</g></svg>
