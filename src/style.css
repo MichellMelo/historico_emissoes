@@ -367,3 +367,58 @@ html,body{overflow-x:hidden}
     width:100%;
   }
 }
+
+
+/* Melhor oferta encontrada */
+.best-offer{
+  position:relative;margin:0 0 16px;padding:18px 20px;border:1px solid rgba(242,193,75,.48);
+  border-radius:16px;overflow:hidden;
+  background:radial-gradient(circle at 100% 0,rgba(242,193,75,.18),transparent 34%),linear-gradient(145deg,#15243a,#0b1726);
+  box-shadow:0 14px 40px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.03)
+}
+.best-offer::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,#ffe38a,#c58a16)}
+.best-offer-badge{display:inline-flex;align-items:center;gap:7px;padding:5px 9px;border-radius:999px;background:rgba(242,193,75,.13);border:1px solid rgba(242,193,75,.24);color:#f7d56f;font-size:9px;font-weight:900;letter-spacing:.1em}
+.best-offer-main{display:grid;grid-template-columns:1.2fr 1fr auto;align-items:center;gap:20px;margin-top:14px}
+.best-offer-route{display:flex;align-items:center;gap:10px;font-size:24px;font-weight:900;letter-spacing:.03em}
+.best-offer-route b{color:#f2c14b;font-size:18px}
+.best-offer-program strong,.best-offer-program span{display:block}
+.best-offer-program strong{font-size:14px;color:#f4f7fb}
+.best-offer-program span{font-size:11px;color:#8ea1b6;margin-top:4px}
+.best-offer-miles{text-align:right}
+.best-offer-miles strong{display:block;color:#f4ce67;font-size:30px;letter-spacing:-.04em}
+.best-offer-miles span{display:block;color:#91a2b5;font-size:10px;text-transform:uppercase;letter-spacing:.08em}
+.best-offer-details{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.07);color:#b8c5d3;font-size:11px}
+.best-offer-details b{color:#8ea1b6;font-weight:700}
+.best-offer-note{margin-top:10px;color:#71849a;font-size:10px}
+.empty-cell{text-align:center!important;padding:30px!important;color:#8295aa!important}
+.offers-mobile{display:none}
+
+@media(max-width:720px){
+  .desktop-offers{display:none!important}
+  .offers-mobile{display:flex;flex-direction:column;gap:10px;width:100%}
+  .offers-panel{padding:10px!important;overflow:visible!important}
+  .offer-card{width:100%;padding:14px;border:1px solid #1d334a;border-radius:13px;background:linear-gradient(145deg,#0d1c2e,#091523);box-shadow:0 8px 24px rgba(0,0,0,.12)}
+  .offer-card-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .offer-card-route{display:flex;align-items:center;gap:7px;min-width:0;font-size:16px;letter-spacing:.03em}
+  .offer-card-route span{color:#f2c14b;font-weight:900}
+  .offer-card-miles{text-align:right;flex:0 0 auto}
+  .offer-card-miles strong{display:block;color:#f4ce67;font-size:18px}
+  .offer-card-miles small{color:#71849a;font-size:8px;text-transform:uppercase}
+  .offer-card-program{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:11px;padding-top:10px;border-top:1px solid rgba(255,255,255,.06)}
+  .offer-card-program strong{font-size:12px;color:#eef4fa}
+  .offer-card-program span{font-size:10px;color:#8ea1b6;text-align:right}
+  .offer-card-details{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-top:10px}
+  .offer-card-details div{min-width:0;padding:8px;border-radius:8px;background:#081321}
+  .offer-card-details small{display:block;color:#657991;font-size:7px;font-weight:800;letter-spacing:.08em;margin-bottom:4px}
+  .offer-card-details span{display:block;color:#b9c6d5;font-size:10px;line-height:1.25;overflow-wrap:anywhere}
+  .offer-card-actions{display:flex;gap:7px;margin-top:10px}
+  .offer-card-actions .icon{width:auto;height:30px;padding:0 10px;font-size:10px}
+  .best-offer{padding:15px;margin-bottom:12px}
+  .best-offer-main{grid-template-columns:1fr auto;gap:10px}
+  .best-offer-route{font-size:21px;grid-column:1/-1}
+  .best-offer-program{min-width:0}
+  .best-offer-program strong{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .best-offer-miles strong{font-size:24px}
+  .best-offer-details{display:grid;grid-template-columns:1fr;gap:6px}
+  .best-offer-note{line-height:1.4}
+}
