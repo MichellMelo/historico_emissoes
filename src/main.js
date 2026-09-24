@@ -45,6 +45,30 @@ async function loadOffers(){
 }
 
 function renderDashboard(){
+const dashboardRecentStyle = \`
+<style id="dashboard-recent-inline">
+.recent-offers-mobile{display:none}
+@media(max-width:720px){
+ .recent-offers-desktop{display:none!important}
+ .recent-offers-mobile{display:block!important;width:100%!important}
+ .recent-offer-card{
+   display:block!important;box-sizing:border-box!important;width:100%!important;
+   margin:0 0 9px!important;padding:14px 15px!important;
+   border:1px solid #1d334a!important;border-radius:14px!important;
+   background:linear-gradient(145deg,#0d1c2e,#091523)!important;
+ }
+ .recent-offer-head{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important}
+ .recent-offer-route{display:flex!important;align-items:center!important;gap:7px!important;font-size:17px!important;line-height:1.2!important}
+ .recent-offer-route span{color:#f2c14b!important}
+ .recent-offer-miles{text-align:right!important}
+ .recent-offer-miles strong{display:block!important;color:#f4ce67!important;font-size:18px!important;line-height:1!important}
+ .recent-offer-miles small{display:block!important;margin-top:4px!important;color:#71849a!important;font-size:8px!important;text-transform:uppercase!important}
+ .recent-offer-meta{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;margin-top:11px!important;padding-top:10px!important;border-top:1px solid rgba(255,255,255,.06)!important}
+ .recent-cabin{color:#8ea1b6!important;font-size:10px!important}
+ .recent-program .program-badge{display:inline-flex!important;align-items:center!important;gap:8px!important;font-size:11px!important}
+ .recent-program .program-logo-frame{display:grid!important;place-items:center!important;width:28px!important;height:28px!important;flex:0 0 28px!important}
+}
+</style>\`;
   const o=state.offers, miles=o.map(x=>x.miles).filter(Boolean);
   const min=miles.length?Math.min(...miles):0;
   const routes=new Set(o.map(x=>x.origin+'-'+x.destination)).size;
