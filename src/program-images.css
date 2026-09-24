@@ -10,3 +10,38 @@
   .program-logo-frame{width:28px;height:28px;flex-basis:28px}
   .program-badge{gap:7px}
 }
+
+/* Logos em cards compactos — evita moldura branca excessiva */
+.recent-program .program-logo-frame.program-logo-latam{
+  width:42px!important;
+  height:26px!important;
+  flex:0 0 42px!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.recent-program .program-logo-frame.program-logo-latam img{
+  width:42px!important;
+  height:26px!important;
+  max-width:none!important;
+  max-height:none!important;
+  padding:0!important;
+  object-fit:contain!important;
+  background:transparent!important;
+}
+.recent-program .program-badge{
+  gap:9px!important;
+}
+@media(max-width:720px){
+  .recent-program .program-logo-frame.program-logo-latam{
+    width:46px!important;
+    height:26px!important;
+    flex-basis:46px!important;
+  }
+  .recent-program .program-logo-frame.program-logo-latam img{
+    width:46px!important;
+    height:26px!important;
+  }
+}
