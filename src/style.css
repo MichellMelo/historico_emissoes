@@ -59,3 +59,173 @@
   .brand-logo{width:44px;height:44px;flex-basis:44px}
   .login-logo{width:62px;height:62px;flex-basis:62px}
 }
+
+
+/* Premium Fabricante de Milhas — ouro como destaque, azul como função */
+:root{
+  --fm-gold:#f2c14b;
+  --fm-gold-2:#c58a16;
+  --fm-gold-soft:rgba(242,193,75,.12);
+  --fm-gold-border:rgba(242,193,75,.32);
+  --fm-blue:#38bdf8;
+}
+.app{
+  background:
+    radial-gradient(circle at 78% -8%,rgba(197,138,22,.10) 0,transparent 25%),
+    radial-gradient(circle at 25% 100%,rgba(197,138,22,.07) 0,transparent 24%),
+    #07111f;
+}
+.sidebar{
+  background:linear-gradient(180deg,rgba(4,11,20,.97),rgba(7,15,25,.94));
+  border-right-color:rgba(242,193,75,.12);
+}
+.nav:hover{
+  background:rgba(242,193,75,.07);
+  color:#fff;
+}
+.nav.active{
+  background:linear-gradient(90deg,rgba(242,193,75,.18),rgba(242,193,75,.05));
+  color:#fff;
+  box-shadow:inset 3px 0 0 var(--fm-gold),0 8px 24px rgba(0,0,0,.12);
+}
+.eyebrow{
+  color:var(--fm-gold);
+}
+.primary{
+  background:linear-gradient(135deg,#f8d46b 0%,#e7ae32 48%,#b9790e 100%);
+  color:#171006;
+  box-shadow:0 10px 30px rgba(197,138,22,.22);
+  border:1px solid rgba(255,232,155,.45);
+}
+.primary:hover{
+  filter:brightness(1.06);
+  transform:translateY(-1px);
+}
+.ghost:hover{
+  border-color:var(--fm-gold-border);
+  color:#f8d979;
+  background:var(--fm-gold-soft);
+}
+.kpi{
+  position:relative;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 100% 0,rgba(242,193,75,.09),transparent 34%),
+    linear-gradient(145deg,#0d1b2c,#0a1624);
+}
+.kpi::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width:3px;
+  background:linear-gradient(180deg,var(--fm-gold),transparent);
+  opacity:.9;
+}
+.kpi b{
+  font-size:30px;
+  letter-spacing:-.03em;
+}
+.kpi:nth-child(1) b,
+.kpi:nth-child(2) b{
+  color:#f4ce67;
+}
+.panel{
+  background:
+    linear-gradient(145deg,rgba(13,27,44,.98),rgba(8,19,32,.98));
+}
+.panel-head h2{
+  color:#f1f5f9;
+}
+.table-wrap th{
+  color:#9aabbd;
+}
+.table-wrap tr:hover td{
+  background:rgba(242,193,75,.035);
+}
+.table-wrap strong{
+  color:#f5f7fa;
+}
+.miles{
+  color:#f3c95e!important;
+}
+.route{
+  transition:background .18s,transform .18s;
+  border-bottom-color:#182a3d;
+}
+.route:hover{
+  background:rgba(242,193,75,.045);
+  transform:translateX(2px);
+}
+.route b{
+  color:#f3c95e;
+}
+.route-code span{
+  color:var(--fm-gold);
+}
+.route-card{
+  background:
+    radial-gradient(circle at 100% 0,rgba(242,193,75,.08),transparent 35%),
+    #0c1929;
+}
+.route-card:hover{
+  border-color:var(--fm-gold-border);
+  box-shadow:0 14px 38px rgba(0,0,0,.18);
+}
+.route-stats div:first-child b{
+  color:#f3c95e;
+}
+.search-main input:focus,
+.form-grid input:focus,
+.form-grid select:focus,
+.form-grid textarea:focus,
+.login-card input:focus{
+  border-color:var(--fm-gold);
+  box-shadow:0 0 0 3px rgba(242,193,75,.09);
+}
+.filter-row select:focus{
+  border-color:var(--fm-gold)!important;
+  box-shadow:0 0 0 3px rgba(242,193,75,.08)!important;
+}
+.search-clear:hover{
+  background:var(--fm-gold-soft);
+  color:#f7d56f;
+}
+.result-count{
+  color:#91a2b5;
+}
+.login-page{
+  background:
+    radial-gradient(circle at 50% 5%,rgba(197,138,22,.15),transparent 32%),
+    radial-gradient(circle at 50% 100%,rgba(56,189,248,.05),transparent 35%),
+    #050b13;
+}
+.login-card{
+  border-color:rgba(242,193,75,.20);
+  background:
+    linear-gradient(145deg,rgba(12,23,39,.98),rgba(7,16,27,.98));
+  box-shadow:0 30px 90px rgba(0,0,0,.55),0 0 45px rgba(197,138,22,.06);
+}
+.login-help{
+  color:#718398;
+}
+.form-grid label{
+  color:#a4b2c2;
+}
+.modal{
+  border-color:rgba(242,193,75,.22);
+  box-shadow:0 30px 90px rgba(0,0,0,.65),0 0 50px rgba(197,138,22,.05);
+}
+.icon:hover{
+  background:var(--fm-gold-soft);
+  color:#f5d16c;
+}
+.toast{
+  border-color:rgba(242,193,75,.25);
+}
+@media(max-width:720px){
+  .kpi b{font-size:24px}
+  .kpi{padding:16px 14px}
+  .topbar .eyebrow{font-size:9px}
+}
