@@ -27,7 +27,7 @@ const PROGRAM_LOGOS = {
     label: 'Iberia Club'
   },
   'Latam': {
-    src: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Latam-logo_-v.svg',
+    src: 'https://upload.wikimedia.org/wikipedia/commons/f/fb/Latam-logo-2016.png',
     label: 'LATAM Airlines'
   },
   'Smiles': {
