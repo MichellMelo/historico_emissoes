@@ -27,8 +27,8 @@ const PROGRAM_LOGOS = {
     label: 'Iberia Club'
   },
   'Latam': {
-    src: 'https://www.latamairlines.com/content/dam/latamxp/sites/sh-ofertas/logo-latam-pass.svg',
-    label: 'LATAM Pass'
+    src: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Latam-logo_-v.svg',
+    label: 'LATAM Airlines'
   },
   'Smiles': {
     src: 'https://static.smiler.com.br/mkt/n_site/2024/lp_clubesmiles/logo_smiles.png',
