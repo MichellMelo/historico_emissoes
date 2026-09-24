@@ -100,7 +100,7 @@ function addProgramLegend() {
 }
 
 function decorate() {
-  document.querySelectorAll('table td').forEach(decorateProgramCell);
+  document.querySelectorAll('table td, [data-program-cell="true"]').forEach(decorateProgramCell);
   addProgramLegend();
 }
 
