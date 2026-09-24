@@ -316,14 +316,65 @@ window.deleteOffer=async id=>{if(!confirm('Excluir esta oferta?'))return;const {
 window.closeModal=()=>document.querySelector('#modalRoot').innerHTML='';
 
 function renderLogin(){
- document.querySelector('#app').innerHTML=`<div class="login-page"><div class="login-card"><div class="brand centered"><img class="brand-logo login-logo" src="/logo-mark.svg" alt="Fabricante de Milhas"><div class="brand-copy"><strong>Fabricante</strong><span>de Milhas</span></div></div><p class="login-sub">Gestão de histórico de ofertas de passagens aéreas.</p><form id="login"><input name="email" type="email" placeholder="E-mail" required><input name="password" type="password" placeholder="Senha" required><button class="primary full" type="submit">Entrar</button></form><p class="login-help">Acesso protegido pelo Supabase Auth.</p></div></div>`;
- document.querySelector('#login').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.target);const {error}=await supabase.auth.signInWithPassword({email:f.get('email'),password:f.get('password')});if(error)toast(error.message,'error');};
+ document.querySelector('#app').innerHTML=`<div class="login-page"><div class="login-card"><div class="brand centered"><img class="brand-logo login-logo" src="/logo-mark.svg" alt="Fabricante de Milhas"><div class="brand-copy"><strong>Fabricante</strong><span>de Milhas</span></div></div><p class="login-sub">Gestão de histórico de ofertas de passagens aéreas.</p><form id="login"><input name="email" type="email" placeholder="E-mail" autocomplete="email" required><input name="password" type="password" placeholder="Senha" autocomplete="current-password" required><button id="loginSubmit" class="primary full" type="submit">Entrar</button></form><p id="loginStatus" class="login-help">Acesso protegido pelo Supabase Auth.</p></div></div>`;
+ const form=document.querySelector('#login');
+ form.onsubmit=async e=>{
+   e.preventDefault();
+   const button=document.querySelector('#loginSubmit');
+   const status=document.querySelector('#loginStatus');
+   const fd=new FormData(form);
+   const email=String(fd.get('email')||'').trim();
+   const password=String(fd.get('password')||'');
+   button.disabled=true;
+   button.textContent='Entrando...';
+   status.textContent='Autenticando...';
+   const {error}=await supabase.auth.signInWithPassword({email,password});
+   if(error){
+     button.disabled=false;
+     button.textContent='Entrar';
+     status.textContent='Não foi possível entrar.';
+     toast(error.message,'error');
+   }
+ };
+}
+
+let appTransitioning=false;
+
+async function enterApp(session){
+ if(!session||appTransitioning)return;
+ appTransitioning=true;
+ try{
+   await Promise.all([loadPrograms(),loadOffers()]);
+   shell();
+   const userEmail=document.querySelector('#userEmail');
+   if(userEmail)userEmail.textContent=session.user?.email||'';
+   renderDashboard();
+ }catch(error){
+   toast(error?.message||'Erro ao carregar o aplicativo.','error');
+   renderLogin();
+ }finally{
+   appTransitioning=false;
+ }
 }
 
 async function boot(){
- const {data:{session}}=await supabase.auth.getSession();
- if(!session){renderLogin();return;}
- await loadPrograms(); await loadOffers(); shell(); document.querySelector('#userEmail').textContent=session.user.email||''; renderDashboard();
- supabase.auth.onAuthStateChange((_event,s)=>{if(!s)renderLogin();});
+ supabase.auth.onAuthStateChange((event,session)=>{
+   if(event==='SIGNED_IN'&&session){
+     setTimeout(()=>enterApp(session),0);
+   }else if(event==='SIGNED_OUT'){
+     renderLogin();
+   }
+ });
+ const {data,error}=await supabase.auth.getSession();
+ if(error){
+   renderLogin();
+   toast(error.message,'error');
+   return;
+ }
+ if(data.session){
+   await enterApp(data.session);
+ }else{
+   renderLogin();
+ }
 }
 boot();
