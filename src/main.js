@@ -60,10 +60,10 @@ function renderDashboard(){
       <div class="kpi"><span>Programas</span><b>${fmt(programs)}</b><small>programas ativos</small></div>
     </div>
     <div class="grid-2">
-      <div class="panel"><div class="panel-head"><div><h2>Últimas ofertas</h2><p>Registros mais recentes</p></div><button class="ghost" onclick="navigate('offers')">Ver todas</button></div>
-        <div class="table-wrap"><table><thead><tr><th>Rota</th><th>Programa</th><th>Classe</th><th>Milhas</th></tr></thead><tbody>${recent.map(row=>`<tr><td><strong>${esc(row.origin)} → ${esc(row.destination)}</strong></td><td>${esc(row.program)}</td><td>${esc(row.cabin)}</td><td class="miles">${fmt(row.miles)}</td></tr>`).join('')}</tbody></table></div>
-      </div>
-      <div class="panel"><div class="panel-head"><div><h2>Rotas em destaque</h2><p>Menores emissões registradas</p></div><button class="ghost" onclick="navigate('routes')">Explorar</button></div>
+      <div class="panel recent-offers-panel"><div class="panel-head"><div><h2>Últimas ofertas</h2><p>Registros mais recentes</p></div><button class="ghost" onclick="navigate('offers')">Ver todas</button></div>
+        <div class="recent-offers-desktop table-wrap"><table><thead><tr><th>Rota</th><th>Programa</th><th>Classe</th><th>Milhas</th></tr></thead><tbody>${recent.map(row=>'<tr><td><strong>'+esc(row.origin)+' → '+esc(row.destination)+'</strong></td><td>'+esc(row.program)+'</td><td>'+esc(row.cabin)+'</td><td class="miles">'+fmt(row.miles)+'</td></tr>').join('')}</tbody></table></div>
+        <div class="recent-offers-mobile">${recent.map(row=>'<article class="recent-offer-card"><div class="recent-offer-head"><div class="recent-offer-route"><strong>'+esc(row.origin)+'</strong><span>→</span><strong>'+esc(row.destination)+'</strong></div><div class="recent-offer-miles"><strong>'+fmt(row.miles)+'</strong><small>milhas</small></div></div><div class="recent-offer-meta"><span class="recent-program" data-program-cell="true">'+esc(row.program)+'</span><span class="recent-cabin">'+esc(row.cabin||'Classe não informada')+'</span></div></article>').join('')}</div>
+      </div>      <div class="panel"><div class="panel-head"><div><h2>Rotas em destaque</h2><p>Menores emissões registradas</p></div><button class="ghost" onclick="navigate('routes')">Explorar</button></div>
         <div class="route-list">${routeSummary().slice(0,7).map(r=>`<div class="route"><div><strong>${esc(r.origin)} → ${esc(r.destination)}</strong><span>${r.count} ofertas</span></div><b>${fmt(r.min)} <small>milhas</small></b></div>`).join('')}</div>
       </div>
     </div>`;
