@@ -64,7 +64,7 @@ function decorateProgramCell(cell) {
 
   if (program) {
     cell.innerHTML = `<span class="program-badge">
-      <span class="program-logo-frame"><img src="${program.src}" alt="${program.label}" loading="lazy" decoding="async" referrerpolicy="no-referrer"></span>
+      <span class="program-logo-frame program-logo-${normalize(program.name).replace(/\s+/g,'-')}" data-program="${String(program.name).trim()}"><img src="${program.src}" alt="${program.label}" loading="lazy" decoding="async" referrerpolicy="no-referrer"></span>
       <span>${text}</span>
     </span>`;
   } else {
