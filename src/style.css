@@ -667,3 +667,26 @@ button#clearAllFilters:active{
     border-top:1px solid rgba(255,255,255,.06);
   }
 }
+
+
+/* Contraste dos campos de busca e filtros */
+.route-field input{
+  color:#eaf2fb!important;
+  caret-color:#f2c14b!important;
+}
+.route-field input::placeholder{
+  color:#8ea4ba!important;
+  opacity:1!important;
+}
+.route-field label{
+  color:#aebed0!important;
+}
+.filter-row select{
+  color:#e7eef7!important;
+  background:#081625!important;
+  -webkit-text-fill-color:#e7eef7!important;
+}
+.filter-row select option{
+  color:#e7eef7!important;
+  background:#0b1929!important;
+}
