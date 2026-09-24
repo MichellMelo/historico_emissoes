@@ -1,0 +1,154 @@
+import { createClient } from '@supabase/supabase-js';
+import './style.css';
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://mchmcfumipqdztrllllm.supabase.co';
+const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_VpgdWN306akpbeZ67B3nBw_-0_0DkMt';
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const state = { offers: [], programs: [], editing: null, filters: { search:'', program:'', cabin:'' } };
+
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+const fmt = n => Number(n || 0).toLocaleString('pt-BR');
+const toast = (msg, type='ok') => { const el=document.createElement('div'); el.className='toast '+type; el.textContent=msg; document.body.appendChild(el); setTimeout(()=>el.remove(),2800); };
+
+function shell() {
+  document.querySelector('#app').innerHTML = `
+    <div class="app">
+      <aside class="sidebar">
+        <div class="brand"><div class="brand-mark">✈</div><div><strong>Histórico</strong><span>de Emissões</span></div></div>
+        <nav>
+          <button class="nav active" data-view="dashboard">◈ <span>Dashboard</span></button>
+          <button class="nav" data-view="offers">▤ <span>Ofertas</span></button>
+          <button class="nav" data-view="routes">⌁ <span>Rotas</span></button>
+        </nav>
+        <div class="sidebar-foot"><span id="userEmail"></span><button id="logout" class="logout">Sair</button></div>
+      </aside>
+      <main class="main">
+        <header class="topbar"><div><div class="eyebrow">FABRICANTE DE MILHAS</div><h1 id="pageTitle">Dashboard</h1></div><button id="newOffer" class="primary">＋ Nova oferta</button></header>
+        <section id="content"></section>
+      </main>
+    </div>
+    <div id="modalRoot"></div>
+  `;
+  document.querySelectorAll('.nav').forEach(b=>b.onclick=()=>navigate(b.dataset.view));
+  document.querySelector('#newOffer').onclick=()=>openForm();
+  document.querySelector('#logout').onclick=async()=>{await supabase.auth.signOut(); renderLogin();};
+}
+
+async function loadPrograms(){ const {data,error}=await supabase.from('flight_programs').select('id,name').eq('active',true).order('name'); if(!error) state.programs=data||[]; }
+
+async function loadOffers(){
+  const {data,error}=await supabase.from('v_flight_offer_history').select('*').order('recorded_at',{ascending:false});
+  if(error){toast(error.message,'error'); return;}
+  state.offers=data||[];
+}
+
+function renderDashboard(){
+  const o=state.offers, miles=o.map(x=>x.miles).filter(Boolean);
+  const min=miles.length?Math.min(...miles):0;
+  const routes=new Set(o.map(x=>x.origin+'-'+x.destination)).size;
+  const programs=new Set(o.map(x=>x.program).filter(Boolean)).size;
+  const avg=miles.length?Math.round(miles.reduce((a,b)=>a+b,0)/miles.length):0;
+  const recent=o.slice(0,8);
+  document.querySelector('#content').innerHTML=`
+    <div class="kpis">
+      <div class="kpi"><span>Total de ofertas</span><b>${fmt(o.length)}</b><small>histórico armazenado</small></div>
+      <div class="kpi"><span>Menor emissão</span><b>${fmt(min)}</b><small>milhas</small></div>
+      <div class="kpi"><span>Média</span><b>${fmt(avg)}</b><small>milhas por oferta</small></div>
+      <div class="kpi"><span>Rotas</span><b>${fmt(routes)}</b><small>combinações únicas</small></div>
+      <div class="kpi"><span>Programas</span><b>${fmt(programs)}</b><small>programas ativos</small></div>
+    </div>
+    <div class="grid-2">
+      <div class="panel"><div class="panel-head"><div><h2>Últimas ofertas</h2><p>Registros mais recentes</p></div><button class="ghost" onclick="navigate('offers')">Ver todas</button></div>
+        <div class="table-wrap"><table><thead><tr><th>Rota</th><th>Programa</th><th>Classe</th><th>Milhas</th></tr></thead><tbody>${recent.map(row=>`<tr><td><strong>${esc(row.origin)} → ${esc(row.destination)}</strong></td><td>${esc(row.program)}</td><td>${esc(row.cabin)}</td><td class="miles">${fmt(row.miles)}</td></tr>`).join('')}</tbody></table></div>
+      </div>
+      <div class="panel"><div class="panel-head"><div><h2>Rotas em destaque</h2><p>Menores emissões registradas</p></div><button class="ghost" onclick="navigate('routes')">Explorar</button></div>
+        <div class="route-list">${routeSummary().slice(0,7).map(r=>`<div class="route"><div><strong>${esc(r.origin)} → ${esc(r.destination)}</strong><span>${r.count} ofertas</span></div><b>${fmt(r.min)} <small>milhas</small></b></div>`).join('')}</div>
+      </div>
+    </div>`;
+}
+
+function routeSummary(){
+ const map=new Map();
+ for(const x of state.offers){const k=x.origin+'-'+x.destination;const r=map.get(k)||{origin:x.origin,destination:x.destination,count:0,min:Infinity};r.count++;r.min=Math.min(r.min,x.miles||Infinity);map.set(k,r);}
+ return [...map.values()].sort((a,b)=>a.min-b.min);
+}
+
+function renderOffers(){
+ const f=state.filters;
+ const rows=state.offers.filter(x=>(!f.program||x.program===f.program)&&(!f.cabin||x.cabin===f.cabin)&&((x.origin+' '+x.destination+' '+(x.program||'')).toLowerCase().includes(f.search.toLowerCase())));
+ document.querySelector('#content').innerHTML=`
+ <div class="toolbar"><div class="search"><span>⌕</span><input id="search" placeholder="Buscar origem, destino ou programa..." value="${esc(f.search)}"></div><select id="programFilter"><option value="">Todos os programas</option>${state.programs.map(p=>`<option ${f.program===p.name?'selected':''}>${esc(p.name)}</option>`).join('')}</select><select id="cabinFilter"><option value="">Todas as classes</option><option ${f.cabin==='Econômica'?'selected':''}>Econômica</option><option ${f.cabin==='Executiva'?'selected':''}>Executiva</option></select><span class="result-count">${rows.length} registros</span></div>
+ <div class="panel"><div class="table-wrap"><table class="offers"><thead><tr><th>Rota</th><th>Programa</th><th>Classe</th><th>Milhas</th><th>Meses</th><th>Datas ida</th><th>Datas volta</th><th></th></tr></thead><tbody>
+ ${rows.map(x=>`<tr><td><strong>${esc(x.origin)} → ${esc(x.destination)}</strong></td><td>${esc(x.program)}</td><td>${esc(x.cabin)}</td><td class="miles">${fmt(x.miles)}</td><td>${esc(x.available_months)}</td><td>${esc(x.outbound_dates)}</td><td>${esc(x.return_dates)}</td><td class="actions"><button class="icon" onclick="editOffer('${x.id}')">✎</button><button class="icon danger" onclick="deleteOffer('${x.id}')">⌫</button></td></tr>`).join('')}</tbody></table></div></div>`;
+ document.querySelector('#search').oninput=e=>{state.filters.search=e.target.value;renderOffers()};
+ document.querySelector('#programFilter').onchange=e=>{state.filters.program=e.target.value;renderOffers()};
+ document.querySelector('#cabinFilter').onchange=e=>{state.filters.cabin=e.target.value;renderOffers()};
+}
+
+function renderRoutes(){
+ const routes=routeSummary();
+ document.querySelector('#content').innerHTML=`<div class="route-cards">${routes.map(r=>`<div class="route-card"><div class="route-code">${esc(r.origin)} <span>→</span> ${esc(r.destination)}</div><div class="route-stats"><div><span>Ofertas</span><b>${r.count}</b></div><div><span>Menor emissão</span><b>${fmt(r.min)}</b></div></div><button class="ghost full" onclick="state.filters.search='${r.origin} ${r.destination}';navigate('offers')">Ver ofertas</button></div>`).join('')}</div>`;
+}
+
+window.navigate = view => {
+ document.querySelectorAll('.nav').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
+ document.querySelector('#pageTitle').textContent={dashboard:'Dashboard',offers:'Ofertas',routes:'Rotas'}[view];
+ document.querySelector('#newOffer').style.display=view==='routes'?'none':'inline-flex';
+ if(view==='dashboard') renderDashboard(); if(view==='offers') renderOffers(); if(view==='routes') renderRoutes();
+};
+
+async function openForm(id=null){
+ const existing=id?state.offers.find(x=>x.id===id):null;
+ const airports=[...new Set(state.offers.flatMap(x=>[x.origin,x.destination]).filter(Boolean))].sort();
+ document.querySelector('#modalRoot').innerHTML=`<div class="modal-bg"><div class="modal"><div class="modal-head"><div><div class="eyebrow">CRUD DE OFERTA</div><h2>${existing?'Editar oferta':'Nova oferta'}</h2></div><button class="close" onclick="closeModal()">×</button></div>
+ <form id="offerForm" class="form-grid">
+ <label>Origem<input name="origin" maxlength="3" required value="${esc(existing?.origin)}" placeholder="FOR"></label>
+ <label>Destino<input name="destination" maxlength="3" required value="${esc(existing?.destination)}" placeholder="MAD"></label>
+ <label>Programa<select name="program_id" required>${state.programs.map(p=>`<option value="${p.id}" ${p.name===existing?.program?'selected':''}>${esc(p.name)}</option>`).join('')}</select></label>
+ <label>Classe<select name="cabin"><option ${existing?.cabin==='Econômica'?'selected':''}>Econômica</option><option ${existing?.cabin==='Executiva'?'selected':''}>Executiva</option></select></label>
+ <label>Milhas<input name="miles" type="number" min="1" required value="${existing?.miles||''}"></label>
+ <label>Meses disponíveis<input name="available_months" value="${esc(existing?.available_months)}" placeholder="Out/2026"></label>
+ <label>Datas de ida<input name="outbound_dates" value="${esc(existing?.outbound_dates)}" placeholder="15,18,22"></label>
+ <label>Datas de volta<input name="return_dates" value="${esc(existing?.return_dates)}" placeholder="27,28,30"></label>
+ <label class="check"><input name="availability" type="checkbox" ${existing?.availability!==false?'checked':''}> Disponível</label>
+ <label class="wide">Observações<textarea name="observations">${esc(existing?.observations)}</textarea></label>
+ <div class="form-actions"><button type="button" class="ghost" onclick="closeModal()">Cancelar</button><button class="primary" type="submit">Salvar oferta</button></div>
+ </form></div></div>`;
+ document.querySelector('#offerForm').onsubmit=async e=>{e.preventDefault();await saveOffer(new FormData(e.target),existing);};
+}
+
+async function getAirportId(iata){
+ const code=String(iata||'').trim().toUpperCase();
+ let {data}=await supabase.from('flight_airports').select('id').eq('iata',code).maybeSingle();
+ if(data) return data.id;
+ const ins=await supabase.from('flight_airports').insert({iata:code,active:true}).select('id').single();
+ if(ins.error) throw ins.error; return ins.data.id;
+}
+async function saveOffer(fd,existing){
+ try{
+  const origin=String(fd.get('origin')).toUpperCase().trim(), destination=String(fd.get('destination')).toUpperCase().trim();
+  if(!/^[A-Z]{3}$/.test(origin)||!/^[A-Z]{3}$/.test(destination)) throw new Error('Origem e destino devem ser IATA com 3 letras.');
+  const origin_id=await getAirportId(origin), destination_id=await getAirportId(destination);
+  const payload={origin_id,destination_id,program_id:fd.get('program_id'),cabin:fd.get('cabin'),miles:Number(fd.get('miles')),available_months:fd.get('available_months')||null,outbound_dates:fd.get('outbound_dates')||null,return_dates:fd.get('return_dates')||null,availability:fd.get('availability')==='on',observations:fd.get('observations')||null,source:'Web App',recorded_at:new Date().toISOString()};
+  const q=existing?supabase.from('flight_offers').update(payload).eq('id',existing.id):supabase.from('flight_offers').insert(payload);
+  const {error}=await q; if(error) throw error;
+  closeModal(); await loadOffers(); toast(existing?'Oferta atualizada.':'Oferta cadastrada.'); navigate('offers');
+ }catch(e){toast(e.message,'error');}
+}
+window.editOffer=id=>openForm(id);
+window.deleteOffer=async id=>{if(!confirm('Excluir esta oferta?'))return;const {error}=await supabase.from('flight_offers').delete().eq('id',id);if(error)toast(error.message,'error');else{await loadOffers();toast('Oferta excluída.');renderOffers();}};
+window.closeModal=()=>document.querySelector('#modalRoot').innerHTML='';
+
+function renderLogin(){
+ document.querySelector('#app').innerHTML=`<div class="login-page"><div class="login-card"><div class="brand centered"><div class="brand-mark">✈</div><div><strong>Histórico</strong><span>de Emissões</span></div></div><p class="login-sub">Gestão de histórico de ofertas de passagens aéreas.</p><form id="login"><input name="email" type="email" placeholder="E-mail" required><input name="password" type="password" placeholder="Senha" required><button class="primary full" type="submit">Entrar</button></form><p class="login-help">Acesso protegido pelo Supabase Auth.</p></div></div>`;
+ document.querySelector('#login').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.target);const {error}=await supabase.auth.signInWithPassword({email:f.get('email'),password:f.get('password')});if(error)toast(error.message,'error');};
+}
+
+async function boot(){
+ const {data:{session}}=await supabase.auth.getSession();
+ if(!session){renderLogin();return;}
+ await loadPrograms(); await loadOffers(); shell(); document.querySelector('#userEmail').textContent=session.user.email||''; renderDashboard();
+ supabase.auth.onAuthStateChange((_event,s)=>{if(!s)renderLogin();});
+}
+boot();
