@@ -344,3 +344,26 @@
     z-index:3;
   }
 }
+
+/* Mobile scroll fix — keep the page itself as the vertical scroll container */
+html,body{overflow-x:hidden}
+@media(max-width:720px){
+  .main{
+    min-width:0;
+    overflow:visible;
+  }
+  .app{
+    min-height:100vh;
+    overflow:visible;
+  }
+  .table-wrap{
+    overflow:visible!important;
+    width:100%;
+  }
+  .panel:has(.offers){
+    overflow:visible;
+  }
+  .offers{
+    width:100%;
+  }
+}
