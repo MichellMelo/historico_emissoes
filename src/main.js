@@ -6,7 +6,7 @@ const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://mchmcfumipqdz
 const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_VpgdWN306akpbeZ67B3nBw_-0_0DkMt';
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const state = { offers: [], programs: [], editing: null, filters: { search:'', program:'', cabin:'' } };
+const state = { offers: [], programs: [], editing: null, filters: { origin:'', destination:'', program:'', cabin:'' } };
 
 const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 const fmt = n => Number(n || 0).toLocaleString('pt-BR');
@@ -77,14 +77,15 @@ function routeSummary(){
 
 function filteredOffers(){
  const f=state.filters;
- const q=f.search.trim().toLowerCase();
+ const origin=f.origin.trim().toUpperCase();
+ const destination=f.destination.trim().toUpperCase();
  return state.offers.filter(x=>
+   (!origin||String(x.origin||'').toUpperCase().includes(origin))&&
+   (!destination||String(x.destination||'').toUpperCase().includes(destination))&&
    (!f.program||x.program===f.program)&&
-   (!f.cabin||x.cabin===f.cabin)&&
-   (!q||(x.origin+' '+x.destination+' '+(x.program||'')+' '+(x.cabin||'')).toLowerCase().includes(q))
+   (!f.cabin||x.cabin===f.cabin)
  );
 }
-
 function renderOfferRows(rows){
  const body=document.querySelector('#offersBody');
  const count=document.querySelector('#resultCount');
@@ -97,10 +98,20 @@ function renderOffers(){
  const f=state.filters;
  document.querySelector('#content').innerHTML=`
  <div class="offers-toolbar">
-   <div class="search search-main">
-     <span class="search-icon">⌕</span>
-     <input id="search" type="search" autocomplete="off" placeholder="Buscar por rota ou programa..." value="${esc(f.search)}">
-     <button id="clearSearch" class="search-clear" type="button" aria-label="Limpar busca" ${f.search?'':'hidden'}>×</button>
+   <div class="route-search">
+     <div class="route-field">
+       <label for="originSearch">PARTIDA</label>
+       <span class="route-field-icon">⇥</span>
+       <input id="originSearch" type="text" inputmode="text" autocomplete="off" maxlength="3" placeholder="Ex.: FOR" value="${esc(f.origin)}" aria-label="Aeroporto de partida">
+     </div>
+     <div class="route-arrow" aria-hidden="true">→</div>
+     <div class="route-field">
+       <label for="destinationSearch">DESTINO</label>
+       <span class="route-field-icon">⇥</span>
+       <input id="destinationSearch" type="text" inputmode="text" autocomplete="off" maxlength="3" placeholder="Ex.: MAD" value="${esc(f.destination)}" aria-label="Aeroporto de destino">
+     </div>
+     <button id="routeSearchButton" class="route-search-button" type="button">Buscar</button>
+     <button id="clearRouteSearch" class="search-clear route-clear" type="button" aria-label="Limpar partida e destino" ${f.origin||f.destination?'':'hidden'}>×</button>
    </div>
    <div class="filter-row">
      <select id="programFilter" aria-label="Filtrar por programa"><option value="">Todos os programas</option>${state.programs.map(p=>`<option ${f.program===p.name?'selected':''}>${esc(p.name)}</option>`).join('')}</select>
@@ -110,14 +121,30 @@ function renderOffers(){
  </div>
  <div class="panel"><div class="table-wrap"><table class="offers"><thead><tr><th>Rota</th><th>Programa</th><th>Classe</th><th>Milhas</th><th>Meses</th><th>Datas ida</th><th>Datas volta</th><th></th></tr></thead><tbody id="offersBody"></tbody></table></div></div>`;
  renderOfferRows(filteredOffers());
- const search=document.querySelector('#search');
- const clear=document.querySelector('#clearSearch');
- search.oninput=e=>{state.filters.search=e.target.value;clear.hidden=!e.target.value;renderOfferRows(filteredOffers());};
- clear.onclick=()=>{state.filters.search='';search.value='';clear.hidden=true;search.focus();renderOfferRows(filteredOffers());};
+ const originInput=document.querySelector('#originSearch');
+ const destinationInput=document.querySelector('#destinationSearch');
+ const clear=document.querySelector('#clearRouteSearch');
+ const applyRouteSearch=()=>{
+   state.filters.origin=originInput.value.trim().toUpperCase();
+   state.filters.destination=destinationInput.value.trim().toUpperCase();
+   if(!state.filters.origin||!state.filters.destination){
+     toast('Informe a partida e o destino.','error');
+     return;
+   }
+   originInput.value=state.filters.origin;
+   destinationInput.value=state.filters.destination;
+   clear.hidden=false;
+   renderOfferRows(filteredOffers());
+ };
+ originInput.oninput=e=>{e.target.value=e.target.value.toUpperCase().replace(/[^A-Z]/g,'').slice(0,3);};
+ destinationInput.oninput=e=>{e.target.value=e.target.value.toUpperCase().replace(/[^A-Z]/g,'').slice(0,3);};
+ originInput.onkeydown=e=>{if(e.key==='Enter')applyRouteSearch();};
+ destinationInput.onkeydown=e=>{if(e.key==='Enter')applyRouteSearch();};
+ document.querySelector('#routeSearchButton').onclick=applyRouteSearch;
+ clear.onclick=()=>{state.filters.origin='';state.filters.destination='';originInput.value='';destinationInput.value='';clear.hidden=true;originInput.focus();renderOfferRows(filteredOffers());};
  document.querySelector('#programFilter').onchange=e=>{state.filters.program=e.target.value;renderOfferRows(filteredOffers());};
  document.querySelector('#cabinFilter').onchange=e=>{state.filters.cabin=e.target.value;renderOfferRows(filteredOffers());};
 }
-
 function renderRoutes(){
  const routes=routeSummary();
  document.querySelector('#content').innerHTML=`<div class="route-cards">${routes.map(r=>`<div class="route-card"><div class="route-code">${esc(r.origin)} <span>→</span> ${esc(r.destination)}</div><div class="route-stats"><div><span>Ofertas</span><b>${r.count}</b></div><div><span>Menor emissão</span><b>${fmt(r.min)}</b></div></div><button class="ghost full" onclick="state.filters.search='${r.origin} ${r.destination}';navigate('offers')">Ver ofertas</button></div>`).join('')}</div>`;
