@@ -527,3 +527,64 @@ button#clearAllFilters:active{
     margin-top:1px!important;
   }
 }
+
+
+/* Layout responsivo da barra de ofertas — evita compressão dos campos de rota */
+@media (min-width:721px) and (max-width:1050px){
+  .offers-toolbar{
+    display:block;
+    padding:12px;
+  }
+
+  .route-search{
+    width:100%;
+    display:grid;
+    grid-template-columns:minmax(150px,1fr) 24px minmax(150px,1fr) auto;
+    align-items:center;
+    gap:9px;
+  }
+
+  .route-field{
+    min-width:150px;
+  }
+
+  .route-search-button{
+    min-width:92px;
+    padding:0 16px;
+  }
+
+  .filter-row{
+    width:100%;
+    margin-top:10px;
+    padding-top:10px;
+    border-top:1px solid rgba(255,255,255,.06);
+    flex-wrap:wrap;
+  }
+
+  .filter-row select{
+    flex:1 1 180px;
+    width:auto!important;
+    min-width:150px;
+  }
+
+  .filter-row button.filter-clear-button,
+  button#clearAllFilters{
+    flex:0 0 auto;
+  }
+
+  .filter-row .result-count{
+    margin-left:auto;
+  }
+}
+
+/* Desktop amplo: mantém a barra em uma única linha sem esmagar os campos */
+@media (min-width:1051px){
+  .route-search{
+    flex:1 1 auto;
+    min-width:520px;
+  }
+
+  .route-field{
+    min-width:150px;
+  }
+}
