@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import './style.css';
+import './program-images.js';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://mchmcfumipqdztrllllm.supabase.co';
 const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_VpgdWN306akpbeZ67B3nBw_-0_0DkMt';
