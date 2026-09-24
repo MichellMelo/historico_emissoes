@@ -15,7 +15,7 @@ function shell() {
   document.querySelector('#app').innerHTML = `
     <div class="app">
       <aside class="sidebar">
-        <div class="brand"><div class="brand-mark">✈</div><div><strong>Histórico</strong><span>de Emissões</span></div></div>
+        <div class="brand"><img class="brand-logo" src="/logo-mark.svg" alt="Fabricante de Milhas"><div class="brand-copy"><strong>Fabricante</strong><span>de Milhas</span></div></div>
         <nav>
           <button class="nav active" data-view="dashboard">◈ <span>Dashboard</span></button>
           <button class="nav" data-view="offers">▤ <span>Ofertas</span></button>
@@ -172,7 +172,7 @@ window.deleteOffer=async id=>{if(!confirm('Excluir esta oferta?'))return;const {
 window.closeModal=()=>document.querySelector('#modalRoot').innerHTML='';
 
 function renderLogin(){
- document.querySelector('#app').innerHTML=`<div class="login-page"><div class="login-card"><div class="brand centered"><div class="brand-mark">✈</div><div><strong>Histórico</strong><span>de Emissões</span></div></div><p class="login-sub">Gestão de histórico de ofertas de passagens aéreas.</p><form id="login"><input name="email" type="email" placeholder="E-mail" required><input name="password" type="password" placeholder="Senha" required><button class="primary full" type="submit">Entrar</button></form><p class="login-help">Acesso protegido pelo Supabase Auth.</p></div></div>`;
+ document.querySelector('#app').innerHTML=`<div class="login-page"><div class="login-card"><div class="brand centered"><img class="brand-logo login-logo" src="/logo-mark.svg" alt="Fabricante de Milhas"><div class="brand-copy"><strong>Fabricante</strong><span>de Milhas</span></div></div><p class="login-sub">Gestão de histórico de ofertas de passagens aéreas.</p><form id="login"><input name="email" type="email" placeholder="E-mail" required><input name="password" type="password" placeholder="Senha" required><button class="primary full" type="submit">Entrar</button></form><p class="login-help">Acesso protegido pelo Supabase Auth.</p></div></div>`;
  document.querySelector('#login').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.target);const {error}=await supabase.auth.signInWithPassword({email:f.get('email'),password:f.get('password')});if(error)toast(error.message,'error');};
 }
 
