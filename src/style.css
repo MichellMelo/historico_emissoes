@@ -588,3 +588,82 @@ button#clearAllFilters:active{
     min-width:150px;
   }
 }
+
+
+/* Organização definitiva da barra de ofertas e legenda de programas */
+@media (min-width:721px){
+  .offers-toolbar{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto;
+    grid-template-areas:
+      "route filters"
+      "legend legend";
+    align-items:center;
+    column-gap:12px;
+    row-gap:10px;
+    min-height:0;
+  }
+
+  .offers-toolbar > .route-search{
+    grid-area:route;
+    min-width:0;
+  }
+
+  .offers-toolbar > .filter-row{
+    grid-area:filters;
+    min-width:0;
+    flex-wrap:nowrap;
+  }
+
+  .offers-toolbar > .program-legend{
+    grid-area:legend;
+    min-width:0;
+    width:100%;
+    padding:8px 0 2px;
+    border-top:1px solid rgba(255,255,255,.06);
+  }
+
+  .program-legend{
+    justify-content:flex-start;
+  }
+}
+
+@media (min-width:721px) and (max-width:1250px){
+  .offers-toolbar{
+    grid-template-columns:1fr;
+    grid-template-areas:
+      "route"
+      "filters"
+      "legend";
+  }
+
+  .offers-toolbar > .filter-row{
+    width:100%;
+    padding-top:10px;
+    border-top:1px solid rgba(255,255,255,.06);
+    justify-content:flex-start;
+  }
+
+  .offers-toolbar > .filter-row select{
+    flex:1 1 180px;
+    width:auto!important;
+  }
+
+  .offers-toolbar > .filter-row .result-count{
+    margin-left:auto;
+  }
+}
+
+/* A legenda nunca deve ocupar uma coluna lateral estreita */
+.program-legend{
+  flex-direction:row;
+  overflow:visible;
+}
+
+@media(max-width:720px){
+  .offers-toolbar > .program-legend{
+    margin-top:10px;
+    padding-top:10px;
+    border-top:1px solid rgba(255,255,255,.06);
+  }
+}
