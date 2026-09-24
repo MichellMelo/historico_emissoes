@@ -75,7 +75,8 @@ const dashboardRecentStyle = \`
   const programs=new Set(o.map(x=>x.program).filter(Boolean)).size;
   const avg=miles.length?Math.round(miles.reduce((a,b)=>a+b,0)/miles.length):0;
   const recent=o.slice(0,8);
-  document.querySelector('#content').innerHTML=`
+  document.querySelector('#content').innerHTML=`${dashboardRecentStyle}
+
     <div class="kpis">
       <div class="kpi"><span>Total de ofertas</span><b>${fmt(o.length)}</b><small>histórico armazenado</small></div>
       <div class="kpi"><span>Menor emissão</span><b>${fmt(min)}</b><small>milhas</small></div>
