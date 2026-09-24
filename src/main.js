@@ -74,16 +74,47 @@ function routeSummary(){
  return [...map.values()].sort((a,b)=>a.min-b.min);
 }
 
+function filteredOffers(){
+ const f=state.filters;
+ const q=f.search.trim().toLowerCase();
+ return state.offers.filter(x=>
+   (!f.program||x.program===f.program)&&
+   (!f.cabin||x.cabin===f.cabin)&&
+   (!q||(x.origin+' '+x.destination+' '+(x.program||'')+' '+(x.cabin||'')).toLowerCase().includes(q))
+ );
+}
+
+function renderOfferRows(rows){
+ const body=document.querySelector('#offersBody');
+ const count=document.querySelector('#resultCount');
+ if(!body||!count)return;
+ count.textContent=rows.length+' registros';
+ body.innerHTML=rows.map(x=>`<tr><td><strong>${esc(x.origin)} → ${esc(x.destination)}</strong></td><td>${esc(x.program)}</td><td>${esc(x.cabin)}</td><td class="miles">${fmt(x.miles)}</td><td>${esc(x.available_months)}</td><td>${esc(x.outbound_dates)}</td><td>${esc(x.return_dates)}</td><td class="actions"><button class="icon" onclick="editOffer('${x.id}')" aria-label="Editar oferta">✎</button><button class="icon danger" onclick="deleteOffer('${x.id}')" aria-label="Excluir oferta">⌫</button></td></tr>`).join('');
+}
+
 function renderOffers(){
  const f=state.filters;
- const rows=state.offers.filter(x=>(!f.program||x.program===f.program)&&(!f.cabin||x.cabin===f.cabin)&&((x.origin+' '+x.destination+' '+(x.program||'')).toLowerCase().includes(f.search.toLowerCase())));
  document.querySelector('#content').innerHTML=`
- <div class="toolbar"><div class="search"><span>⌕</span><input id="search" placeholder="Buscar origem, destino ou programa..." value="${esc(f.search)}"></div><select id="programFilter"><option value="">Todos os programas</option>${state.programs.map(p=>`<option ${f.program===p.name?'selected':''}>${esc(p.name)}</option>`).join('')}</select><select id="cabinFilter"><option value="">Todas as classes</option><option ${f.cabin==='Econômica'?'selected':''}>Econômica</option><option ${f.cabin==='Executiva'?'selected':''}>Executiva</option></select><span class="result-count">${rows.length} registros</span></div>
- <div class="panel"><div class="table-wrap"><table class="offers"><thead><tr><th>Rota</th><th>Programa</th><th>Classe</th><th>Milhas</th><th>Meses</th><th>Datas ida</th><th>Datas volta</th><th></th></tr></thead><tbody>
- ${rows.map(x=>`<tr><td><strong>${esc(x.origin)} → ${esc(x.destination)}</strong></td><td>${esc(x.program)}</td><td>${esc(x.cabin)}</td><td class="miles">${fmt(x.miles)}</td><td>${esc(x.available_months)}</td><td>${esc(x.outbound_dates)}</td><td>${esc(x.return_dates)}</td><td class="actions"><button class="icon" onclick="editOffer('${x.id}')">✎</button><button class="icon danger" onclick="deleteOffer('${x.id}')">⌫</button></td></tr>`).join('')}</tbody></table></div></div>`;
- document.querySelector('#search').oninput=e=>{state.filters.search=e.target.value;renderOffers()};
- document.querySelector('#programFilter').onchange=e=>{state.filters.program=e.target.value;renderOffers()};
- document.querySelector('#cabinFilter').onchange=e=>{state.filters.cabin=e.target.value;renderOffers()};
+ <div class="offers-toolbar">
+   <div class="search search-main">
+     <span class="search-icon">⌕</span>
+     <input id="search" type="search" autocomplete="off" placeholder="Buscar por rota ou programa..." value="${esc(f.search)}">
+     <button id="clearSearch" class="search-clear" type="button" aria-label="Limpar busca" ${f.search?'':'hidden'}>×</button>
+   </div>
+   <div class="filter-row">
+     <select id="programFilter" aria-label="Filtrar por programa"><option value="">Todos os programas</option>${state.programs.map(p=>`<option ${f.program===p.name?'selected':''}>${esc(p.name)}</option>`).join('')}</select>
+     <select id="cabinFilter" aria-label="Filtrar por classe"><option value="">Todas as classes</option><option ${f.cabin==='Econômica'?'selected':''}>Econômica</option><option ${f.cabin==='Executiva'?'selected':''}>Executiva</option></select>
+     <span id="resultCount" class="result-count">${filteredOffers().length} registros</span>
+   </div>
+ </div>
+ <div class="panel"><div class="table-wrap"><table class="offers"><thead><tr><th>Rota</th><th>Programa</th><th>Classe</th><th>Milhas</th><th>Meses</th><th>Datas ida</th><th>Datas volta</th><th></th></tr></thead><tbody id="offersBody"></tbody></table></div></div>`;
+ renderOfferRows(filteredOffers());
+ const search=document.querySelector('#search');
+ const clear=document.querySelector('#clearSearch');
+ search.oninput=e=>{state.filters.search=e.target.value;clear.hidden=!e.target.value;renderOfferRows(filteredOffers());};
+ clear.onclick=()=>{state.filters.search='';search.value='';clear.hidden=true;search.focus();renderOfferRows(filteredOffers());};
+ document.querySelector('#programFilter').onchange=e=>{state.filters.program=e.target.value;renderOfferRows(filteredOffers());};
+ document.querySelector('#cabinFilter').onchange=e=>{state.filters.cabin=e.target.value;renderOfferRows(filteredOffers());};
 }
 
 function renderRoutes(){
