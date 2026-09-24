@@ -452,3 +452,30 @@ html,body{overflow-x:hidden}
   .recent-offers-panel .panel-head p{font-size:11px}
   .recent-offers-panel .ghost{height:38px;padding:0 14px;font-size:12px}
 }
+
+
+/* Botão global para limpar todos os filtros */
+.filter-clear-button{
+  height:40px;
+  padding:0 14px;
+  border:1px solid rgba(242,193,75,.32);
+  border-radius:9px;
+  background:rgba(242,193,75,.08);
+  color:#f2c14b;
+  font-size:11px;
+  font-weight:800;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:.18s ease;
+}
+.filter-clear-button:hover{
+  background:rgba(242,193,75,.15);
+  border-color:rgba(242,193,75,.55);
+}
+.filter-clear-button:active{transform:scale(.98)}
+@media(max-width:720px){
+  .filter-clear-button{
+    flex:1 1 auto;
+    min-width:120px;
+  }
+}
