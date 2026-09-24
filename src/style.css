@@ -422,3 +422,33 @@ html,body{overflow-x:hidden}
   .best-offer-details{display:grid;grid-template-columns:1fr;gap:6px}
   .best-offer-note{line-height:1.4}
 }
+
+
+/* Últimas ofertas — experiência mobile sem tabela */
+.recent-offers-mobile{display:none}
+.recent-offers-panel{overflow:hidden}
+.recent-offer-card{border:1px solid #1d334a;border-radius:14px;background:linear-gradient(145deg,#0d1c2e,#091523);padding:14px 15px;transition:transform .18s,border-color .18s}
+.recent-offer-card + .recent-offer-card{margin-top:9px}
+.recent-offer-card:active{transform:scale(.99)}
+.recent-offer-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.recent-offer-route{display:flex;align-items:center;gap:7px;min-width:0;font-size:17px;letter-spacing:.02em}
+.recent-offer-route span{color:var(--fm-gold);font-weight:900}
+.recent-offer-miles{text-align:right;flex:0 0 auto}
+.recent-offer-miles strong{display:block;color:#f4ce67;font-size:18px;line-height:1}
+.recent-offer-miles small{display:block;margin-top:4px;color:#71849a;font-size:8px;text-transform:uppercase;letter-spacing:.08em}
+.recent-offer-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:11px;padding-top:10px;border-top:1px solid rgba(255,255,255,.06)}
+.recent-program{min-width:0}
+.recent-cabin{color:#8ea1b6;font-size:10px;text-align:right;white-space:nowrap}
+.recent-program .program-badge{font-size:11px}
+.recent-program .program-logo-frame{width:28px;height:28px;flex-basis:28px;border-radius:7px}
+.recent-program .program-logo-frame img{max-width:21px;max-height:21px}
+
+@media(max-width:720px){
+  .recent-offers-desktop{display:none!important}
+  .recent-offers-mobile{display:block}
+  .recent-offers-panel{overflow:visible!important}
+  .recent-offers-panel .panel-head{margin-bottom:12px}
+  .recent-offers-panel .panel-head h2{font-size:18px}
+  .recent-offers-panel .panel-head p{font-size:11px}
+  .recent-offers-panel .ghost{height:38px;padding:0 14px;font-size:12px}
+}
