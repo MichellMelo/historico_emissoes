@@ -207,6 +207,7 @@ function renderOffers(){
    <div class="filter-row">
      <select id="programFilter" aria-label="Filtrar por programa"><option value="">Todos os programas</option>${state.programs.map(p=>`<option ${f.program===p.name?'selected':''}>${esc(p.name)}</option>`).join('')}</select>
      <select id="cabinFilter" aria-label="Filtrar por classe"><option value="">Todas as classes</option><option ${f.cabin==='Econômica'?'selected':''}>Econômica</option><option ${f.cabin==='Executiva'?'selected':''}>Executiva</option></select>
+     <button id="clearAllFilters" class="filter-clear-button" type="button">Limpar filtros</button>
      <span id="resultCount" class="result-count">${filteredOffers().length} registros</span>
    </div>
  </div>
@@ -239,6 +240,13 @@ function renderOffers(){
  clear.onclick=()=>{state.filters.origin='';state.filters.destination='';originInput.value='';destinationInput.value='';clear.hidden=true;originInput.focus();renderOfferRows(filteredOffers());};
  document.querySelector('#programFilter').onchange=e=>{state.filters.program=e.target.value;renderOfferRows(filteredOffers());};
  document.querySelector('#cabinFilter').onchange=e=>{state.filters.cabin=e.target.value;renderOfferRows(filteredOffers());};
+ document.querySelector('#clearAllFilters').onclick=()=>{
+   state.filters.origin='';
+   state.filters.destination='';
+   state.filters.program='';
+   state.filters.cabin='';
+   renderOffers();
+ };
 }
 function openRouteOffers(origin,destination){
  state.filters.origin=String(origin||'').toUpperCase();
